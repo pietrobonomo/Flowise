@@ -1,5 +1,4 @@
-import { IAction } from 'flowise-components'
-import { ICommonObject, IFileUpload, INode, INodeData as INodeDataFromComponent, INodeParams } from 'flowise-components'
+import { IAction, ICommonObject, IFileUpload, INode, INodeData as INodeDataFromComponent, INodeParams } from 'flowise-components'
 
 export type MessageType = 'apiMessage' | 'userMessage'
 
@@ -272,6 +271,19 @@ export interface IApiKey {
     apiKey: string
     apiSecret: string
     updatedDate: Date
+}
+
+export interface ICustomTemplate {
+    id: string
+    name: string
+    flowData: string
+    updatedDate: Date
+    createdDate: Date
+    description?: string
+    type?: string
+    badge?: string
+    framework?: string
+    usecases?: string
 }
 
 // DocumentStore related
