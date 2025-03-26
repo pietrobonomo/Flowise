@@ -512,7 +512,7 @@
         {
             "name": "groqChat",
             "models": [
-                 {
+                {
                     "label": "qwen-2.5-32b",
                     "name": "qwen-2.5-32b"
                 },
