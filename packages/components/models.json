@@ -513,14 +513,6 @@
             "name": "groqChat",
             "models": [
                 {
-                    "label": "qwen-2.5-32b",
-                    "name": "qwen-2.5-32b"
-                },
-                {
-                    "label": "deepseek-r1-distill-qwen-32b",
-                    "name": "deepseek-r1-distill-qwen-32b"
-                },
-                {
                     "label": "deepseek-r1-distill-llama-70b",
                     "name": "deepseek-r1-distill-llama-70b"
                 },
