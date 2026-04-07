@@ -247,10 +247,16 @@ export const resolveVariables = async (
         // If value is not a string, return as is
         if (typeof value !== 'string') return value
 
-        const turndownService = new TurndownService()
-        value = turndownService.turndown(value)
-        // After conversion, replace any escaped underscores with regular underscores
-        value = value.replace(/\\_/g, '_')
+        // Convert legacy HTML content to markdown, preserving any markdown syntax within.
+        // Legacy content from old getHTML() starts with a TipTap block tag (e.g. <p>text</p>).
+        // Anchor with ^ to avoid matching intentional HTML/XML tags in user prompts
+        // (e.g. <instruction><div>...</div></instruction>).
+        if (/^\s*<(?:p|div|h[1-6]|ul|ol|blockquote|pre|table)\b/i.test(value)) {
+            const turndownService = new TurndownService()
+            // Disable escaping so markdown characters (e.g. ###, -, *) inside HTML are preserved as-is
+            turndownService.escape = (str: string) => str
+            value = turndownService.turndown(value)
+        }
 
         const matches = value.match(/{{(.*?)}}/g)
 
@@ -1103,10 +1109,11 @@ const executeNode = async ({
             Object.keys(iterationContext.agentflowRuntime.state).length > 0
         ) {
             updatedState = {
-                ...updatedState,
-                ...iterationContext.agentflowRuntime.state
+                ...iterationContext.agentflowRuntime.state,
+                ...updatedState
             }
             flowConfig.state = updatedState
+            agentflowRuntime.state = updatedState
         }
 
         // Resolve variables in node data
@@ -2278,6 +2285,7 @@ export const executeAgentFlow = async ({
     if (lastNodeOutput?.usedTools) apiMessage.usedTools = JSON.stringify(lastNodeOutput.usedTools)
     if (lastNodeOutput?.fileAnnotations) apiMessage.fileAnnotations = JSON.stringify(lastNodeOutput.fileAnnotations)
     if (lastNodeOutput?.artifacts) apiMessage.artifacts = JSON.stringify(lastNodeOutput.artifacts)
+    if (lastNodeOutput?.reasonContent) apiMessage.reasonContent = JSON.stringify(lastNodeOutput.reasonContent)
     if (chatflow.followUpPrompts) {
         const followUpPromptsConfig = JSON.parse(chatflow.followUpPrompts)
         const followUpPrompts = await generateFollowUpPrompts(followUpPromptsConfig, apiMessage.content, {
